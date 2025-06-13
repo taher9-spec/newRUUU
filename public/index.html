@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OpenRouter Chat</title>
+<style>
+body { background-color: #121212; color: #f5f5f5; font-family: Arial, sans-serif; margin:0; padding:0; }
+.chat-container { max-width: 600px; margin:40px auto; padding:20px; background-color:#1e1e1e; border-radius:8px; }
+input, button { padding:8px; border:none; border-radius:4px; }
+button { background-color:#0f62fe; color:#fff; cursor:pointer; }
+.messages { margin-top:20px; white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<div class="chat-container">
+  <h1>OpenRouter Chat</h1>
+  <div>
+    <input id="message" type="text" placeholder="Say something..." style="width:80%" />
+    <button onclick="send()">Send</button>
+  </div>
+  <div id="messages" class="messages"></div>
+</div>
+<script>
+async function send() {
+  const msgInput = document.getElementById('message');
+  const text = msgInput.value;
+  if (!text) return;
+  const resp = await fetch('/api/chat', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({message:text})
+  });
+  if (!resp.ok) {
+    alert('Error: ' + resp.statusText);
+    return;
+  }
+  const data = await resp.json();
+  const messages = document.getElementById('messages');
+  messages.textContent += 'You: ' + text + '\nAI: ' + data.reply + '\n\n';
+  msgInput.value = '';
+}
+</script>
+</body>
+</html>
